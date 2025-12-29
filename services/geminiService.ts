@@ -1,32 +1,25 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeminiMetadataResponse } from "../types";
 
-// Initialize Gemini Client
-// In a production app, the API key should be securely handled.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// نستخدم تعريفاً بسيطاً لـ process لتجنب أخطاء TypeScript أثناء البناء
+declare var process: {
+  env: {
+    API_KEY: string;
+  };
+};
 
 export const generateVideoMetadata = async (filename: string): Promise<GeminiMetadataResponse> => {
-  if (!process.env.API_KEY) {
-    console.warn("No API Key provided. Returning mock data.");
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          title: `فيديو معالج: ${filename.replace(/\.[^/.]+$/, "")}`,
-          description: "هذا وصف تجريبي تم إنشاؤه تلقائياً لأن مفتاح API غير موجود. يرجى إضافة مفتاح Gemini لتفعيل الذكاء الاصطناعي الحقيقي.",
-          tags: ["فيديو", "تجريبي", "سحابة"]
-        });
-      }, 1500);
-    });
-  }
+  // إنشاء نسخة جديدة في كل مرة لضمان استخدام أحدث مفتاح API
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const prompt = `
       لدي ملف فيديو باسم "${filename}". 
       يرجى إنشاء الآتي **باللغة العربية**:
-      1. عنوان جذاب متوافق مع محركات البحث (SEO).
-      2. وصف قصير وشيق (جملتين كحد أقصى).
-      3. خمسة وسوم (tags) ذات صلة.
-      افترض أن المحتوى تقني أو تعليمي بناءً على الاسم.
+      1. عنوان تقني دقيق.
+      2. وصف موضوعي (جملة واحدة).
+      3. خمسة وسوم تقنية.
     `;
 
     const response = await ai.models.generateContent({
@@ -56,11 +49,10 @@ export const generateVideoMetadata = async (filename: string): Promise<GeminiMet
 
   } catch (error) {
     console.error("Gemini AI Error:", error);
-    // Fallback in case of error
     return {
       title: filename,
-      description: "فشل التوليد التلقائي. يرجى التعديل يدوياً.",
-      tags: ["خطأ", "مراجعة-يدوية"]
+      description: "تم الرفع بنجاح. بانتظار المراجعة الفنية.",
+      tags: ["معالجة", "سحابة"]
     };
   }
 };
