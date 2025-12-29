@@ -1,0 +1,7 @@
+{
+  "name": "لوحه التحكم ",
+  "description": "نظام إدارة محتوى الفيديو للمطورين. يدعم الرفع السحابي، والذكاء الاصطناعي (Gemini)، والأوامر الصوتية (ElevenLabs).",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
